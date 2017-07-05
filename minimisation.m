@@ -1,11 +1,11 @@
-function [U_opt, min_cost] = minimisation(X,x,U,J_future,model,syst)
+function [U_opt, min_cost] = minimisation(X,x,U_bnd,J_future,model,syst)
 % computes the optimal control value and associated minimum cost for a
 % given state value
 % inputs : 
 %   X : cell array. Each array contains the discretisation of this
 %   particular state value. 
 %   x : current state value
-%   U : vector which contains a discretisation of the command
+%   U_bnd : extremum values of the control
 %   J_future : matrix of the future cost
 %   model : structure containing the modelisation parameters
 %   syst : structure containing the sizing parameters
@@ -15,7 +15,7 @@ function [U_opt, min_cost] = minimisation(X,x,U,J_future,model,syst)
 
 
 % control boundaries
-[U_min,U_max] = calc_boundaries(X,x,U,model,syst);
+[U_min,U_max] = calc_boundaries(X,x,U_bnd,model);
 % cost function to be minimized
 obj_fun = @(u)(calc_cost(X,x,u,J_future,model,syst));
 % Nelder Mead simplex with multiple initialisations

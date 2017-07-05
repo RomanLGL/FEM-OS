@@ -18,51 +18,46 @@ syst.eta_coef_bat = 0.01; % battery efficiency modeling
 
 %% modeling of production process
 model.dT = 1/12; % model time step in hours
-model.type = 'ms_ar'; % type of desired modeling 
+model.type = 'ar1'; % type of desired modeling 
                       % uniform, persistence, ar1, ar2 or ms_ar
 
-%% state space discretization
-N_E_sto = 2;
-EE_sto = linspace(syst.E_sto_max/N_E_sto,syst.E_sto_max,N_E_sto);
+%% state space and command space discretization
+N_E_sto = 10;
+EE_sto = linspace(syst.E_sto_max/,syst.E_sto_max,N_E_sto);
 N_SOE = 10;
 SOE = linspace(0,1,N_SOE);
 N_DELTA_P = 10;
 DELTA_P = linspace(-syst.P_prod_max,syst.P_prod_max,N_DELTA_P);
-model = stochastic_modeling(DELTA_P,model,syst);
+N_U = 10;
+U = linspace(syst.P_sto_min,syst.P_sto_max,N_U);
 
-%% command boundaries
-U_bnd = [syst.P_sto_min syst.P_sto_max];
+model = stochastic_modeling(DELTA_P,model,syst);
 
 %% state vector construction
 switch model.type
     case 'ms_ar'
-        PI = 1:model.nb_states;
-        X{1} = EE_sto;
-        X{2} = SOE;
-        X{3} = DELTA_P;
-        X{4} = PI;
+        PI = 1:model.nb_states;        
+        X{1} = SOE;
+        X{2} = DELTA_P;
+        X{3} = PI;
     case 'ar1'
-        X{1} = EE_sto;
-        X{2} = SOE;
-        X{3} = DELTA_P;
+        X{1} = SOE;
+        X{2} = DELTA_P;
     case 'ar2'
-        X{1} = EE_sto;
-        X{2} = SOE;
+        X{1} = SOE;
+        X{2} = DELTA_P;
         X{3} = DELTA_P;
-        X{4} = DELTA_P;
     case 'uniform'
-        X{1} = EE_sto;
-        X{2} = SOE;
-        X{3} = DELTA_P;
+        X{1} = SOE;
+        X{2} = DELTA_P;
     case 'persistence'
-        X{1} = EE_sto;
-        X{2} = SOE;
-        X{3} = DELTA_P;
+        X{1} = SOE;
+        X{2} = DELTA_P;
 end
 
 %% dynamic programing
 tic;
-[U_law,J] = StoDynProg(X,U_bnd,model,syst);
+[U_law,J] = StoDynProg(X,U,model,syst);
 toc
 str = strcat('results_',num2str(model.type));
-save(str,'X','U_bnd','model','syst','U_law','J');
+save(str,'X','U','model','syst','U_law','J');

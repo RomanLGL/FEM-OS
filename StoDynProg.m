@@ -1,9 +1,10 @@
-function [U_law,J] = StoDynProg(X,U,model,syst)
+function [U_law,J] = StoDynProg(X,U_bnd,model,syst)
 % computes the optimal control matrix U_law along with the optimal cost
 % matrix J using Bellman equation with an infinite horizon
 % inputs : 
 %   X : cell array. Each array contains the discretisation of this
 %   particular state value.
+%   U_bnd : extremum values of the control
 %   model : structure containing the modelisation parameters
 %   syst : structure containing the sizing parameters
 % outputs : 
@@ -35,7 +36,7 @@ while ( sum(abs(dif(:))) > rel_tol*max(dif(:)) ) &&...
     J_future = J;
     for i_x = 1:prod(S)
         [x,index] = state_index_shaping(X,i_x);
-        [U_opt, min_cost] = minimisation(X,x,U,J_future,...
+        [U_opt, min_cost] = minimisation(X,x,U_bnd,J_future,...
             model,syst);
         linearInd = sub2ind_dim(S,index);
         U_law(linearInd) = U_opt;

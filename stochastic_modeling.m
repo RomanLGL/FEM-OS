@@ -40,8 +40,8 @@ switch model.type
         model.Sigma = syst.P_prod_max.*41/4500; % standart variation of
                                             % errors 
         Prob_Delta = zeros(length(DELTA_P),length(DELTA_P));
-        for i = 1:length(DELTA_P)
-            for j = 1:length(DELTA_P)
+        for i = 1:length(DELTA_P) % previous error value
+            for j = 1:length(DELTA_P) % current error value
                 delta_sup = DELTA_P(j) + d_DELTA_P/2 ;
                 delta_inf = DELTA_P(j) - d_DELTA_P/2 ;
                 Mu = model.Phi*DELTA_P(i);
@@ -57,9 +57,9 @@ switch model.type
         model.Sigma = syst.P_prod_max.*37/4500; % standart variation of
                                               % errors 
         Prob_Delta = zeros(length(DELTA_P),length(DELTA_P),length(DELTA_P));
-        for i = 1:length(DELTA_P)
-            for j = 1:length(DELTA_P)
-                for k = 1:length(DELTA_P)
+        for i = 1:length(DELTA_P) % previous error value
+            for j = 1:length(DELTA_P) % preivous previous error value
+                for k = 1:length(DELTA_P) % current error value
                     delta_sup = DELTA_P(k) + d_DELTA_P/2 ;
                     delta_inf = DELTA_P(k) - d_DELTA_P/2 ;
                     Mu = model.Phi(1)*DELTA_P(i) + ...
