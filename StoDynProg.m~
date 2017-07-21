@@ -11,9 +11,7 @@ function [U_law,J] = StoDynProg(X,U_bnd,model,syst)
 %   U_law : optimal control matrix U_law
 %   J : optimal cost matrix
 
-parobj = parpool(4);
-
-%% initialisation and preallocations of the results matrix
+%% inialisation and preallocations of the results matrix
 N = length(X); % state dimension
 S = zeros(1,N); % vector of length of discretized state dimensions
 for k = 1:N
@@ -38,8 +36,8 @@ while ( sum(abs(dif(:))) > rel_tol*max(dif(:)) ) &&...
     J_future = J;
     U_tmp = zeros(1,prod(S));
     J_tmp = zeros(1,prod(S));
-    parfor i_x = 1:prod(S)
-        x = state_index_shaping(X,i_x);
+    for i_x = 1:prod(S)
+        [x = state_index_shaping(X,i_x);
         [U_opt, min_cost] = minimisation(X,x,U_bnd,J_future,...
             model,syst);
         U_tmp(i_x) = U_opt;
@@ -53,7 +51,5 @@ end
 if n==n_max+1
     disp('reached maximum iteration value')
 end
-
-delete(parobj);
 
 end

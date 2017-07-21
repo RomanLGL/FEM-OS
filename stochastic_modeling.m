@@ -36,7 +36,7 @@ switch model.type
         end
         % autoregressive
     case 'ar1'
-        model.Phi = 0.98; % autocorrelation of errors
+        model.Phi = 0.8; % autocorrelation of errors
         model.Sigma = syst.P_prod_max.*41/4500; % standart variation of
                                             % errors 
         Prob_Delta = zeros(length(DELTA_P),length(DELTA_P));
@@ -53,12 +53,12 @@ switch model.type
             Prob_Delta(i,:) = Prob_Delta(i,:)./sum(Prob_Delta(i,:));            
         end
     case 'ar2'
-        model.Phi = [1.4427 -0.4696]; % autocorrelation of errors with previous values
+        model.Phi = [0.7 0.3]; % autocorrelation of errors with previous values
         model.Sigma = syst.P_prod_max.*37/4500; % standart variation of
                                               % errors 
         Prob_Delta = zeros(length(DELTA_P),length(DELTA_P),length(DELTA_P));
         for i = 1:length(DELTA_P) % previous error value
-            for j = 1:length(DELTA_P) % preivous previous error value
+            for j = 1:length(DELTA_P) % previous previous error value
                 for k = 1:length(DELTA_P) % current error value
                     delta_sup = DELTA_P(k) + d_DELTA_P/2 ;
                     delta_inf = DELTA_P(k) - d_DELTA_P/2 ;

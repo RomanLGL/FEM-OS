@@ -46,6 +46,55 @@ inst_cost = C_age+C_mis+C_loss;
 
 end
 
+function C = f_age(P_sto,E_sto,model,syst)
+% computes the aging cost 
+% inputs : 
+%   P_sto : stored power
+%   E_sto : rated capacity of the storage
+%   syst : system parameters
+%       E_sto_max : battery rated capacity
+%       alpha,beta : parameters of the aging law
+%   model : model parameters
+%       dT : time step
+% outputs : 
+%   C : aging cost
+
+DoD = P_sto*model.dT/E_sto;
+d = abs(syst.alpha*DoD^syst.beta);
+C = syst.E_bat_emb*E_sto*d;
+end
+
+function C = f_loss(P_sto,model,syst)
+% computes the cost associated to the battery losses 
+% inputs : 
+%   P_sto : stored power
+%   syst : system parameters
+%       a : losses coefficient
+%       eta_renew : environmental efficiency of the renewable system
+%   model : model parameters
+%       dT : time step
+% outputs : 
+%   C : losses cost
+
+P_loss = syst.eta_coef_bat*P_sto^2./syst.P_sto_max;
+C = model.dT*P_loss./syst.eta_renew;
+
+end
+
+function C = f_mis(dP_grid,model,syst)
+% computes the cost associated to the commitment mismatch 
+% inputs : 
+%   dP_grid : commitment mismatch power
+%   syst : system parameters
+%       eta_EU : environmental efficiency of the european electricity mix
+%   model : model parameters
+%       dT : time step
+% outputs : 
+%   C : mismatch cost
+
+C = model.dT*abs(dP_grid)./syst.eta_EU;
+end
+
 function future_cost = calc_future_cost(X,x,u,J_future,model,syst)
 % compute the expectancy of the future cost
 % inputs :
@@ -125,8 +174,7 @@ switch model.type
         future_cost = Interp_1D(EE_sto,J_future,E_sto);
         future_cost = Interp_1D(SOE,future_cost,soe_next);
         future_cost = Interp_1D(DELTA_1,future_cost',delta_1)';
-        tmp = future_cost.*prob_delta_next;
-        future_cost = sum(tmp(:));
+        future_cost = future_cost'*prob_delta_next;
     case 'uniform'
         %% state_vector components
         EE_sto = X{1};

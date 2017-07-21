@@ -17,16 +17,16 @@ syst.eta_renew = syst.E_pv_life/syst.E_pv_emb; % environmental efficiency
 syst.eta_coef_bat = 0.01; % battery efficiency modeling
 
 %% modeling of production process
-model.dT = 1/12; % model time step in hours
+model.dT = 1; % model time step in hours
 model.type = 'ms_ar'; % type of desired modeling 
                       % uniform, persistence, ar1, ar2 or ms_ar
 
 %% state space discretization
 N_E_sto = 2;
 EE_sto = linspace(syst.E_sto_max/N_E_sto,syst.E_sto_max,N_E_sto);
-N_SOE = 10;
+N_SOE = 20;
 SOE = linspace(0,1,N_SOE);
-N_DELTA_P = 10;
+N_DELTA_P = 20;
 DELTA_P = linspace(-syst.P_prod_max,syst.P_prod_max,N_DELTA_P);
 model = stochastic_modeling(DELTA_P,model,syst);
 
